@@ -1,5 +1,5 @@
 const pgConncetion = 'postgres://xtlwfxlb:VDTdcHbPiFO45Ioq0heijwJPhC5oWZWk@fanny.db.elephantsql.com/xtlwfxlb'
-
+//api.elephantsql.com
 async function connect() {
     if (global.connection) {
         return global.connection.connect();
