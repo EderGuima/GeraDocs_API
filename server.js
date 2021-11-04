@@ -1,10 +1,14 @@
-const app = require('express')();
+require("dotenv-safe").config();
+var express = require('express');
+var app = express();
 const route = require('./src/routes/routes')
+const jwt = require('jsonwebtoken');
 
-// CHAMA ARQUIVO DE ROTA - QUE EH O QUE IRA CONTROLAR TODAS AS REQUISICOES
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
 app.use('/', route)
 
-// RODANDO A APLICACAO NA PORTA SETADA
 app.listen(8080, () => {
     console.log('Servidor rodando na porta 8080')
 });

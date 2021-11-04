@@ -1,6 +1,25 @@
 const db = require('../../db/config')
 
 module.exports = {
+    
+    async login(req, res) {
+        // check for basic auth header
+        if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
+            return res.status(401).json({ message: 'Missing Authorization Header' }).end();
+        }
+
+        // verify auth credentials
+        const base64Credentials = req.headers.authorization.split(' ')[1];
+        const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+        const [username, password] = credentials.split(':');
+        const user = await userService.authenticate({ username, password });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid Authentication Credentials' }).end();
+        }
+        
+        return user
+    },
+
     async get(req, res) {
         const client = await db.connect();
         const response = await client.query('SELECT * FROM clientes');
@@ -17,7 +36,11 @@ module.exports = {
         const id = req.params.id;
         const client = await db.connect();
         const response = await client.query("SELECT * FROM clientes WHERE id = $1", [id]);
-        res.setHeader('Content-Type', 'application/json');
+
+        //por exemplo, se enviar um pdf eu tenho que alterar - para cada tipo de retorno.
+        // se for json não precisa pois é o padrão
+        // res.setHeader('Content-Type', 'application/json');
+
         if (isEmpty(response.rows)) {
             res.send("Nenhum registro encontrado com id: " + id);
         } else {
@@ -27,17 +50,23 @@ module.exports = {
     },
 
     async post(req, res) {
-        const client = await db.connect();
-        const response = await client.query(
-            'INSERT INTO clientes(nome,username,password) VALUES ($1,$2,$3);',
-            [req.params.nome, req.params.username, req.params.password]);
-        res.setHeader('Content-Type', 'application/json');
-        if (response.rowCount > 0) {
-            res.send("Registro adicionado com sucesso");
+        if (!req.body.data) {
+            return res.status(400).json({ message: 'Missing Body' })
         } else {
-            res.send("Erro")
+            const client = await db.connect();
+            const response = await client.query(
+                'INSERT INTO clientes(nome,username,password) VALUES ($1,$2,$3);',
+                [req.body.nome, req.body.username, req.body.password]);
+
+            res.setHeader('Content-Type', 'application/json');
+
+            if (response.rowCount > 0) {
+                res.send("Registro adicionado com sucesso");
+            } else {
+                res.send("Erro na inclusão")
+            }
+            client.release()
         }
-        client.release()
     }
 }
 
