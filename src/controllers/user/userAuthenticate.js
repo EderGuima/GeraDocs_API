@@ -1,9 +1,14 @@
+const jwt = require('jsonwebtoken');
+
 module.exports = {
     async getToken(id) {
-
+        const token = jwt.sign({ id }, process.env.SECRET, {
+            expiresIn: 300 
+        });
+        return token;
     },
 
-    async validToken(token) {
+    async validToken(req, res, next) {
         const token = req.headers['x-access-token'];
         if (!token) return res.status(401).json({ auth: false, message: 'No token provided.' });
 

@@ -1,8 +1,7 @@
-require("dotenv-safe").config();
+require("dotenv").config();
 var express = require('express');
 var app = express();
 const route = require('./src/routes/routes')
-const jwt = require('jsonwebtoken');
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
