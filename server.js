@@ -4,7 +4,7 @@ var app = express();
 const route = require('./src/routes/routes')
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/', route)
 

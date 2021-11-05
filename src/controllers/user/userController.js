@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const auth = require('./userAuthenticate');
 const user = require('./userService');
+const isempty = require('../../utils/functions')
 
 router.post('/login', async function (req, res) {
     const response = await user.login(req, res);
-    if (isEmpty(response)) {
+    if (isempty.isEmpty(response)) {
         res.status(400).json({ message: "Nenhum registro encontrado" });
     } else {
         const token = await auth.getToken(response[0].id)
@@ -13,32 +14,34 @@ router.post('/login', async function (req, res) {
     }
 });
 
-router.get('/', auth.validToken, function (req, res) {
-    const response = user.get(req, res);
-    if (isEmpty(response)) {
+router.get('/', auth.validToken, async function (req, res) {
+    const response = await user.get(req, res);
+    if (isempty.isEmpty(response)) {
         res.status(400).json({ message: "Nenhum registro encontrado" });
     } else {
         res.json({ response: response });
     }
 });
 
-router.get('/:id', auth.validToken, function (req, res) {
-    user.getOne(req, res);
+router.get('/:id', auth.validToken, async function (req, res) {
+    const response = await user.getOne(req, res);
+    if (isempty.isEmpty(response)) {
+        res.status(400).json({ message: "Nenhum registro encontrado" });
+    } else {
+        res.json({ response: response });
+    }
 });
 
-//alterar para pegar do body
-router.post('/incluir', function (req, res) {
-    user.post(req, res);
+router.post('/incluir', async function (req, res) {
+    const response = await user.post(req, res);
+    if (isempty.isEmpty(response)) {
+        res.status(400).json({ message: "Nenhum registro encontrado" });
+    } else {
+        res.json({ response: response });
+    }
 });
 
 //colocar em outro arquivo
-function isEmpty(obj) {
-    for (var key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            return false;
-        }
-    }
-    return true;
-}
+
 
 module.exports = router;
