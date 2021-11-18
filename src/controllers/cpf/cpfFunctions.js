@@ -43,10 +43,8 @@ module.exports = {
                 secondValidation = true;
             }
             if (fisrtValidation === true && secondValidation === true) {
-                console.log(true)
                 return true;
             } else {
-                console.log(false)
                 return false;
             }
         }
